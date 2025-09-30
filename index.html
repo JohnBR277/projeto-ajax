@@ -1,0 +1,83 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Estados do Rock - SPA</title>
+  <style>
+    h1 {
+      background-color: #111;
+      padding: 15px;
+      text-align: center;
+    }
+
+    a {
+      text-decoration: none;
+    }
+
+    a:hover {
+      color: #0be928;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #222;
+      color: #fff;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .pagina {
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Estados do Rock</h1>
+
+  <div>
+    <a href="home.html" data-routes="pagina=home">Início</a> |
+    <a href="bandas.html" data-routes="pagina=bandas">Bandas</a> |
+    <a href="discografia.html" data-routes="pagina=discografia">Discografia</a>
+  </div>
+
+  <div class="pagina">
+  </div>
+
+  <script>
+    function navegarViaAjax(url, seletor, push = true) {
+      const el = document.querySelector(seletor);
+      fetch(url)
+        .then(resp => resp.text())
+        .then(html => {
+          el.innerHTML = html;
+          if (push) {
+            history.pushState({ seletor }, "Página Ajax", url);
+          }
+        });
+    }
+
+    document.querySelectorAll("a[rel='link']").forEach(link => {
+      link.addEventListener("click", evt => {
+        evt.preventDefault();
+        const destino = link.getAttribute("data-routes");
+        const pagina = link.getAttribute("href");
+
+        link.onclick = () => {
+          navegarViaAjax(pagina, ".pagina");
+          return false;
+        };
+      });
+    });
+
+    window.onpopstate = e => {
+      navegarViaAjax(window.location.href, e.state.seletor, false);
+    };
+
+    window.onload = () => {
+      navegarViaAjax("home.html", ".pagina", false);
+    };
+  </script>
+</body>
+</html>
